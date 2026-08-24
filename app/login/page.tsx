@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Field, FieldDescription, FieldGroup, FieldLabel, FieldSeparator } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
@@ -81,10 +82,13 @@ export default function Login() {
                     </FieldGroup>
                 </form>
                 <div className="relative hidden bg-muted md:block">
-                    <img
-                    src="/placeholder.svg"
-                    alt="Image"
-                    className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+                    <Image
+                        src="/login.png"
+                        alt="Image"
+                        width={400}
+                        height={200}
+                        quality={100}
+                        className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
                     />
                 </div>
                 </CardContent>
