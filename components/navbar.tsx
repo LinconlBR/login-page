@@ -24,14 +24,14 @@ export default function Navbar() {
                 </Link>
                 </div>
                 <div>
-                    <Link href="/" >
+                    <Link href="/login" >
                         <Button  
                             variant="link"
                         >
                             Log in
                         </Button>
                     </Link>
-                    <Link href="/">
+                    <Link href="/signup">
                     <Button  
                         className="rounded-full border border-border px-5 py-2 text-sm font-medium transition-colors"
                     >
