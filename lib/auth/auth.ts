@@ -4,7 +4,12 @@ import { MongoClient } from "mongodb";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-const client = new MongoClient(process.env.MONGODB_URI!);
+const uri = process.env.MONGODB_URI;
+if (!uri) {
+  throw new Error("MONGODB_URI não está definida");
+}
+const client = new MongoClient(uri);
+
 const db = client.db();
 
 export const auth = betterAuth({
@@ -31,7 +36,7 @@ export async function signOut () {
     if(result.success){
         redirect("/sign-in")
     }else{
-        alert("error no sign out !")
+         alert("error no sign out !")
     } 
 
 }
