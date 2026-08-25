@@ -12,7 +12,11 @@ const client = new MongoClient(uri);
 
 const db = client.db();
 
-export const auth = betterAuth({
+export const auth = betterAuth({    
+    baseURL: process.env.BETTER_AUTH_URL,
+    trustedOrigins: [
+        "https://login-page-nu-weld-36.vercel.app",
+    ],
     database: mongodbAdapter(db, {
         client,
     }),
