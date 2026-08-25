@@ -1,18 +1,59 @@
+"use client"
+
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Field, FieldDescription, FieldGroup, FieldLabel, FieldSeparator } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
+import { signUp } from "@/lib/auth/auth-client"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+
 
 export default function Signup() {
+    const router = useRouter();
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+        
+        setLoading(true);
+        setError("");
+
+        try {
+            const result = await signUp.email({
+                name, 
+                email, 
+                password,
+            });
+            if (result.error) {
+                setError(result.error.message ?? "Falhou ao criar a conta");
+            }else {
+                // Handle successful signup, e.g., redirect to a welcome page
+                router.push("/dashboard"); // Replace with your desired route
+            }
+        } catch (error) {
+            setError("Failed to create account");
+        } finally {
+            setLoading(false);
+        }
+    }
+    
     return (    
     <div className="flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">
         <div className="w-full max-w-sm md:max-w-4xl">
             <div className="flex flex-col gap-6">
                 <Card className="overflow-hidden p-0">
                     <CardContent className="grid p-0 md:grid-cols-2">
-                        <form className="p-6 md:p-8">
+                        <form onSubmit={handleSubmit} className="p-6 md:p-8">
                             <FieldGroup>
+                            {error && <p className="text-sm text-red-500">{error}</p>}
                             <div className="flex flex-col items-center gap-2 text-center">
                                 <h1 className="text-2xl font-bold">Create your account</h1>
                                 <p className="text-sm text-balance text-muted-foreground">
@@ -20,8 +61,19 @@ export default function Signup() {
                                 </p>
                             </div>
                             <Field>
+                                <FieldLabel htmlFor="name">Nome</FieldLabel>
+                                <Input
+                                onChange={(e) => setName(e.target.value)}
+                                id="name"
+                                type="text"
+                                placeholder="John Doe"
+                                required
+                                />
+                            </Field>
+                            <Field>
                                 <FieldLabel htmlFor="email">Email</FieldLabel>
                                 <Input
+                                onChange={(e) => setEmail(e.target.value)}
                                 id="email"
                                 type="email"
                                 placeholder="m@example.com"
@@ -36,13 +88,23 @@ export default function Signup() {
                                 <Field className="grid grid-cols-2 gap-4">
                                 <Field>
                                     <FieldLabel htmlFor="password">Password</FieldLabel>
-                                    <Input id="password" type="password" required />
+                                    <Input
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        id="password"
+                                        type="password"
+                                        required
+                                    />
                                 </Field>
                                 <Field>
                                     <FieldLabel htmlFor="confirm-password">
                                     Confirm Password
                                     </FieldLabel>
-                                    <Input id="confirm-password" type="password" required />
+                                    <Input  
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        id="confirm-password"
+                                        type="password"
+                                        required
+                                    />
                                 </Field>
                                 </Field>
                                 <FieldDescription>
@@ -50,7 +112,10 @@ export default function Signup() {
                                 </FieldDescription>
                             </Field>
                             <Field>
-                                <Button type="submit">Create Account</Button>
+                                
+                                <Button type="submit" disabled={loading}>
+                                    {loading ? "Creating Account..." : "Create Account"}
+                                </Button>
                             </Field>
                             <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
                                 Or continue with

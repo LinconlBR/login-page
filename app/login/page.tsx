@@ -1,19 +1,57 @@
-import { cn } from "@/lib/utils"
+"use client"
+
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Field, FieldDescription, FieldGroup, FieldLabel, FieldSeparator } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
+import { signIn } from "@/lib/auth/auth-client"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import Link from "next/link";
 
 export default function Login() {
+    const router = useRouter();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+            event.preventDefault();
+            
+            setLoading(true);
+            setError("");
+    
+            try {
+                const result = await signIn.email({
+                    email, 
+                    password,
+                });
+                if (result.error) {
+                    setError(result.error.message ?? "Falhou ao logar");
+                }else {
+                    // Handle successful signup, e.g., redirect to a welcome page
+                    router.push("/dashboard"); // Replace with your desired route
+                }
+            } catch (error) {
+                setError("Failed to login");
+            } finally {
+                setLoading(false);
+            }
+        }
+
   return (
     <div className="flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">
       <div className="w-full max-w-sm md:max-w-4xl">
         <div className="flex flex-col gap-6">
             <Card className="overflow-hidden p-0">
                 <CardContent className="grid p-0 md:grid-cols-2">
-                <form className="p-6 md:p-8">
+                <form onSubmit={handleSubmit} className="p-6 md:p-8">
                     <FieldGroup>
+                    
+                    {error && <p className="text-sm text-red-500">{error}</p>}
                     <div className="flex flex-col items-center gap-2 text-center">
                         <h1 className="text-2xl font-bold">Welcome back</h1>
                         <p className="text-balance text-muted-foreground">
@@ -23,27 +61,33 @@ export default function Login() {
                     <Field>
                         <FieldLabel htmlFor="email">Email</FieldLabel>
                         <Input
-                        id="email"
-                        type="email"
-                        placeholder="m@example.com"
-                        required
+                            onChange={(e) => setEmail(e.target.value)}
+                            id="email"
+                            type="email"
+                            placeholder="m@example.com"
+                            required
                         />
                     </Field>
                     <Field>
                         <div className="flex items-center">
                         <FieldLabel htmlFor="password">Password</FieldLabel>
-                        <a
-                            href="#"
+                        <Link 
+                            href="/"
                             className="ml-auto text-sm underline-offset-2 hover:underline"
                         >
                             Forgot your password?
-                        </a>
+                        </Link>
                         </div>
-                        <Input id="password" type="password" required />
+                        <Input
+                            onChange={(e) => setPassword(e.target.value)}
+                            id="password"
+                            type="password"
+                             required
+                        />
                     </Field>
-                    <Field>
-                        <Button type="submit">Login</Button>
-                    </Field>
+                    <Button type="submit" disabled={loading}>
+                        {loading ? "Logando..." : "Entrar"}
+                    </Button>
                     <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
                         Or continue with
                     </FieldSeparator>

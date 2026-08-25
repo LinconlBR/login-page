@@ -12,8 +12,6 @@ import {
 } from "@/components/ui/card" 
 import { Monitor , Smartphone } from "lucide-react"
 import {Chart, ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
-
-
 import Link from "next/link";
 
 const features = [
@@ -50,22 +48,12 @@ const chartConfig = {
   desktop: {
     label: "Desktop",
     icon: Monitor,
-    // A color like 'hsl(220, 98%, 61%)' or 'var(--color-name)'
     color: "#2563eb",
-    // OR a theme object with 'light' and 'dark' keys
-    theme: {
-      light: "#2563eb",
-      dark: "#dc2626",
-    },
   },
   mobile: {
     label: "Mobile",
     icon: Smartphone,
     color: "#f97316",
-    theme: {
-      light: "#f97316",
-      dark: "#facc15",
-    },
   },
 } satisfies ChartConfig
 
