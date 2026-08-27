@@ -2,17 +2,26 @@ import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import getMongoClient from "./mongoClient"; // ajuste o caminho conforme onde você salvar o arquivo
+import getMongoClient from "./mongoClient";
 
 const client = getMongoClient();
-const db = client.db(); // client.db() NÃO conecta — apenas cria a referência.
-                         // A conexão real só acontece na primeira query, em runtime.
+const db = client.db();
+
+// Monta a lista de origens confiáveis dinamicamente:
+// - a URL de produção fixa
+// - a URL do deploy atual (Vercel expõe isso automaticamente em VERCEL_URL)
+// - um curinga para qualquer preview deploy do seu projeto (opcional)
+const trustedOrigins = [
+    "https://login-page-nu-weld-36.vercel.app",
+];
+
+if (process.env.VERCEL_URL) {
+    trustedOrigins.push(`https://${process.env.VERCEL_URL}`);
+}
 
 export const auth = betterAuth({
     baseURL: process.env.BETTER_AUTH_URL,
-    trustedOrigins: [
-        "https://login-page-nu-weld-36.vercel.app",
-    ],
+    trustedOrigins,
     database: mongodbAdapter(db, {
         client,
     }),
