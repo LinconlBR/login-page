@@ -8,27 +8,17 @@ if (!uri) {
 declare global {
   // eslint-disable-next-line no-var
   var _mongoClient: MongoClient | undefined;
-  // eslint-disable-next-line no-var
-  var _mongoClientPromise: Promise<MongoClient> | undefined;
 }
 
-let clientPromise: Promise<MongoClient>;
-
-if (process.env.NODE_ENV === "development") {
-  // Em dev, reaproveita a conexão entre hot-reloads do Next.js
-  if (!global._mongoClientPromise) {
-    global._mongoClient = new MongoClient(uri);
-    global._mongoClientPromise = global._mongoClient.connect();
+// Não chamamos .connect() aqui de propósito: o driver do MongoDB conecta
+// automaticamente (lazy) na primeira operação real feita no banco.
+// Isso evita que o Next.js tente abrir conexão de rede durante o BUILD
+// (quando ele faz "collect page data" das rotas de API).
+function getMongoClient(): MongoClient {
+  if (!global._mongoClient) {
+    global._mongoClient = new MongoClient(uri as string);
   }
-  clientPromise = global._mongoClientPromise;
-} else {
-  // Em produção (Vercel), cria uma conexão por instância de função,
-  // mas ainda cacheia dentro do módulo para reaproveitar entre invocações "quentes"
-  if (!global._mongoClientPromise) {
-    const client = new MongoClient(uri);
-    global._mongoClientPromise = client.connect();
-  }
-  clientPromise = global._mongoClientPromise;
+  return global._mongoClient;
 }
 
-export default clientPromise;
+export default getMongoClient;

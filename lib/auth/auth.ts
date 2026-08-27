@@ -2,10 +2,11 @@ import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import clientPromise from "./mongoClient"; // ajuste o caminho conforme onde você salvar o arquivo
+import getMongoClient from "./mongoClient"; // ajuste o caminho conforme onde você salvar o arquivo
 
-const client = await clientPromise;
-const db = client.db();
+const client = getMongoClient();
+const db = client.db(); // client.db() NÃO conecta — apenas cria a referência.
+                         // A conexão real só acontece na primeira query, em runtime.
 
 export const auth = betterAuth({
     baseURL: process.env.BETTER_AUTH_URL,
