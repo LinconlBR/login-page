@@ -1,18 +1,13 @@
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
-import { MongoClient } from "mongodb";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import clientPromise from "./mongoClient"; // ajuste o caminho conforme onde você salvar o arquivo
 
-const uri = process.env.MONGODB_URI;
-if (!uri) {
-  throw new Error("MONGODB_URI não está definida");
-}
-const client = new MongoClient(uri);
-
+const client = await clientPromise;
 const db = client.db();
 
-export const auth = betterAuth({    
+export const auth = betterAuth({
     baseURL: process.env.BETTER_AUTH_URL,
     trustedOrigins: [
         "https://login-page-nu-weld-36.vercel.app",
@@ -44,4 +39,3 @@ export async function signOut () {
     } 
 
 }
-
